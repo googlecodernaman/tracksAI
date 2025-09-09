@@ -1,0 +1,244 @@
+# Cursor Rules for tracksAI Project
+
+## Project Overview
+This is the tracksAI project. Follow these rules to maintain code quality, consistency, and best practices.
+
+## General Development Rules
+
+### Code Style & Formatting
+- Use consistent indentation (2 spaces for most languages, 4 spaces for Python)
+- Follow language-specific style guides (ESLint for JavaScript/TypeScript, Black for Python, etc.)
+- Use meaningful variable and function names
+- Write self-documenting code with clear comments for complex logic
+- Keep functions small and focused on a single responsibility
+
+### File Organization
+- Use clear, descriptive file and folder names
+- Group related files in appropriate directories
+- Keep configuration files at the project root
+- Separate concerns (models, views, controllers, utilities, etc.)
+
+### Git & Version Control
+- Write clear, descriptive commit messages
+- Use conventional commit format when possible (feat:, fix:, docs:, etc.)
+- Keep commits atomic and focused
+- Create meaningful branch names
+- Use pull requests for code review
+
+### Documentation
+- Write README files for major components
+- Document API endpoints and their parameters
+- Include code examples in documentation
+- Keep documentation up to date with code changes
+
+## Technology-Specific Rules
+
+### Frontend Development (if applicable)
+- Use modern JavaScript/TypeScript features
+- Implement responsive design principles
+- Follow accessibility guidelines (WCAG)
+- Optimize for performance (lazy loading, code splitting, etc.)
+- Use semantic HTML elements
+- Implement proper error handling and loading states
+
+### Backend Development (if applicable)
+- Follow RESTful API design principles
+- Implement proper error handling and logging
+- Use environment variables for configuration
+- Implement input validation and sanitization
+- Follow security best practices
+- Use appropriate HTTP status codes
+
+### Database (if applicable)
+- Use migrations for schema changes
+- Implement proper indexing
+- Follow normalization principles
+- Use parameterized queries to prevent SQL injection
+- Implement proper backup strategies
+
+### AI/ML Development (if applicable)
+- Document model architecture and hyperparameters
+- Implement proper data validation and preprocessing
+- Use version control for models and datasets
+- Implement proper evaluation metrics
+- Follow ethical AI practices
+- Document data sources and processing steps
+
+## Code Quality
+
+### Testing
+- Write unit tests for critical functionality
+- Implement integration tests for API endpoints
+- Use test-driven development when appropriate
+- Maintain good test coverage
+- Write tests that are maintainable and readable
+
+### Performance
+- Profile code for performance bottlenecks
+- Optimize database queries
+- Implement caching where appropriate
+- Monitor application performance
+- Use appropriate data structures and algorithms
+
+### Security
+- Validate all user inputs
+- Implement proper authentication and authorization
+- Use HTTPS in production
+- Keep dependencies updated
+- Follow OWASP security guidelines
+- Implement proper error handling without exposing sensitive information
+
+## Development Workflow
+
+### Before Starting Work
+- Pull latest changes from main branch
+- Create a new feature branch
+- Understand the requirements and existing codebase
+
+### During Development
+- Write clean, readable code
+- Test your changes thoroughly
+- Follow the established patterns in the codebase
+- Ask questions when requirements are unclear
+
+### Before Submitting
+- Run all tests and ensure they pass
+- Check for linting errors
+- Review your own code
+- Update documentation if needed
+- Ensure your changes don't break existing functionality
+
+## AI-Specific Guidelines
+
+### Model Development
+- Document model architecture and training process
+- Implement proper data preprocessing pipelines
+- Use version control for models and datasets
+- Implement reproducible experiments
+- Document hyperparameters and their rationale
+
+### Data Handling
+- Follow data privacy regulations (GDPR, CCPA, etc.)
+- Implement proper data anonymization when needed
+- Document data sources and collection methods
+- Implement data quality checks
+- Use appropriate data storage and backup strategies
+
+### Model Deployment
+- Implement proper model versioning
+- Use containerization for consistent deployments
+- Implement monitoring and logging for model performance
+- Plan for model updates and rollbacks
+- Implement proper error handling for model inference
+
+## Communication
+
+### Code Reviews
+- Be constructive and respectful in feedback
+- Focus on code quality and maintainability
+- Explain the reasoning behind suggestions
+- Be open to feedback and suggestions
+- Review for security vulnerabilities
+
+### Documentation
+- Write clear, concise documentation
+- Include examples and use cases
+- Keep documentation current with code changes
+- Use diagrams when helpful for complex concepts
+- Document assumptions and limitations
+
+## Tools and Dependencies
+
+### Package Management
+- Keep dependencies up to date
+- Use specific version numbers in production
+- Remove unused dependencies
+- Document why specific packages are needed
+- Use package-lock files for reproducible builds
+
+### Development Tools
+- Use appropriate linters and formatters
+- Configure IDE/editor settings consistently
+- Use debugging tools effectively
+- Implement proper logging
+- Use version control hooks for quality checks
+
+# ./cursorules
+# Coding & operational rules for Railway Decision-Support prototype
+# KEEP THIS FILE UNDER VERSION CONTROL (root of repo)
+
+1. Code style & formatting
+   - Run 'black .' and 'ruff .' before each commit.
+   - Use 'isort' for imports.
+   - All public functions and classes MUST have a docstring.
+
+2. Typing & static checks
+   - Add type hints for all public functions.
+   - PRs must pass mypy (strict mode for /core and /api modules).
+
+3. Testing & coverage
+   - Unit tests required for every new function in /core.
+   - Integration tests required for worker and DB interactions.
+   - Minimum coverage 80% for critical modules (core solver, repos).
+
+4. PR / Code review
+   - No direct pushes to main. Use feature branches and PRs.
+   - PR checklist:
+     - Tests included and passing
+     - Linting & formatting OK
+     - Docstring + README updated
+     - Cursorules followed
+
+5. Architecture & modularity
+   - Keep domain logic in /core and pure-Python.
+   - I/O code must live in /api, /ingest, or /workers only.
+   - All DB access through repo interfaces (no direct SQL in business code).
+
+6. Error handling
+   - Never swallow exceptions silently.
+   - Add context to errors (raise new with context or use logging.exception).
+   - Exponential backoff for external calls (3 retries, then escalate).
+
+7. Logging & observability
+   - Use structured logging (JSON) with correlation_id.
+   - Log at key decision points: inbound snapshot, chosen plan, overrides.
+   - Add Prometheus metrics for:
+     - solver_time_seconds
+     - recommendations_per_minute
+     - average_delay_minutes
+
+8. Idempotency & auditing
+   - All external commands (apply_decision) must be idempotent.
+   - Every decision and override must be stored with user id and timestamp.
+
+9. Security & secrets
+   - No secrets or credentials in code or env files.
+   - Use secret manager (Vault/k8s-secrets) in deployments.
+
+10. DB & migrations
+    - Use Alembic for migrations. Migration files required for any schema change.
+    - Add indexes for fields used in filters and spatial queries.
+
+11. Performance & solver usage
+    - Solver calls must have time limits and graceful fallback.
+    - For real-time, prefer precomputed heuristics + incremental replan.
+
+12. Dev environment
+    - Provide docker-compose.dev.yml for local platform (DB, Redis, Kafka).
+    - Provide seed fixtures (small dataset) to reproduce demo.
+
+13. Releases / CI
+    - All merges to main trigger CI which runs tests, linters, and builds images.
+    - Tag releases semantically.
+
+14. Documentation
+    - Maintain README per service with run/start/test instructions.
+    - Keep an architecture.md describing dataflows and dependencies.
+
+15. Emergency & rollback
+    - Provide 'panic mode' endpoint to disable auto-recommendations and revert to manual mode.
+    - Ensure quick rollback path for DB schema/feature toggles.
+
+# End of cursorules
+
+Remember: These rules are guidelines to help maintain code quality and team productivity. Adapt them as needed for your specific project requirements and team preferences.
